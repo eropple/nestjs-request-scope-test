@@ -1,18 +1,20 @@
 import { Module } from '@nestjs/common';
+import { REQUEST, APP_INTERCEPTOR } from '@nestjs/core';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RlogInterceptor } from './rlog.interceptor';
 import { FactoryProvider, Scope } from '@nestjs/common/interfaces';
-import { REQUEST } from '@nestjs/core';
 
 const rlog: FactoryProvider = {
+  provide: APP_INTERCEPTOR,
   scope: Scope.REQUEST,
-  inject: [REQUEST],
-  provide: RlogInterceptor,
-  useFactory: (request) => {
-    return new RlogInterceptor(request);
-  }
-}
+  inject: [AppService],
+  useFactory: (appService: AppService) => {
+    console.log('rLog hit', appService);
+    return new RlogInterceptor('foo');
+  },
+};
 
 @Module({
   imports: [],
